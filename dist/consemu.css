@@ -1,22 +1,23 @@
 /* TODO: package CSS inside HTML */
 
+.consemu {
+    padding: 0 5px;
+}
+
 .consemu, .consemu textarea {
-    font-family: 'monaco', 'lucida console', monospace;
-    font-size: 1.0em;
-    line-height: 1.3em;
-    padding-left: 1.0em;
+    font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;
+    font-size: 12px;
     white-space: pre;
 }
 
-.consemu textarea {
+.consemu div[contenteditable=true] {
     border: none;
     resize: none;
-    width: 775px;
-    height: 1.3em;
     border-left: solid 3px orange;
+    padding-left: 8px;
 }
 
-.consemu textarea:focus {
+.consemu div[contenteditable=true] {
     outline: none;
 }
 
@@ -55,22 +56,22 @@
 
 .consemu .line {
     border-bottom: solid 1px whitesmoke;
-    padding: 2px 0;
+    /*padding: 2px 0;*/
 }
 
-.consemu .triangle {
-    position:absolute;
-    width:1.5em;
-    left:-1.5em;
-    top:0.25em;
-    text-align:center;
-    font-size:0.75em;
-    color: #666;
-    cursor: pointer;
-}
+/*.consemu .triangle {*/
+    /*position:absolute;*/
+    /*width:1.5em;*/
+    /*left:-1.5em;*/
+    /*top:0.25em;*/
+    /*text-align:center;*/
+    /*font-size:0.75em;*/
+    /*color: #666;*/
+    /*cursor: pointer;*/
+/*}*/
 
-.consemu ul {
-    margin: 0;
-    list-style-type: none;
-    padding-left: 16px;
-}
+/*.consemu ul {*/
+    /*margin: 0;*/
+    /*list-style-type: none;*/
+    /*padding-left: 16px;*/
+/*}*/

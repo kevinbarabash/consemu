@@ -25,7 +25,10 @@ function createConsole(container) {
     var console;
 
     // initialization code
-    textarea = document.createElement("textarea");
+    textarea = document.createElement("div");
+    textarea.style.width = "100%";
+    textarea.style.boxSizing = "border-box";
+    textarea.setAttribute("contenteditable", "true");
     container.appendChild(textarea);
 
     trueClick.addEventListener(container, function (e) {
@@ -37,12 +40,13 @@ function createConsole(container) {
         if (e.keyCode === 13) {
             if (e.shiftKey) {
                 lineCount++;
-                textarea.style.height = 1.3 * lineCount + "em";
             } else {
-                addLine(textarea.value, "code");
+                if (textarea.innerText.trim() !== "") {
+                    addLine(textarea.innerText, "code");
+                }
 
                 // TODO: parse each line so that we can extract variable declaration to an outer context
-                runCode(textarea.value, function () {
+                runCode(textarea.innerText, function () {
                     e.preventDefault();
                     resetInput();
                 });
@@ -55,9 +59,7 @@ function createConsole(container) {
     // disrupting each other
     console = {
         log: function () {
-            for (var _len = arguments.length,
-                args = Array(_len),
-                _key = 0; _key < _len; _key++) {
+            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
                 args[_key] = arguments[_key];
             }
 
@@ -90,16 +92,15 @@ function createConsole(container) {
     };
 
     var resetInput = function () {
-        textarea.value = "";
+        textarea.innerText = "";
         lineCount = 1;
-        textarea.style.height = 1.3 * lineCount + "em";
 
         updateScroll();
     };
 
     var runCode = function (code, callback) {
         try {
-            var result = eval(textarea.value);
+            var result = eval(code);
             console.log(result);
         } catch (e) {
             addLine(e.toString(), "error");
@@ -117,10 +118,15 @@ function createConsole(container) {
         }
     };
 
+    var setFontSize = function (fontSize) {
+        container.style.fontSize = fontSize + "px";
+    };
+
     // public "interface"
     return {
         clear: clear,
-        runCode: runCode
+        runCode: runCode,
+        setFontSize: setFontSize
     };
 }
 
@@ -129,6 +135,7 @@ var ConsoleEmulator = function (container) {
     var obj = createConsole(container);
     this.clear = obj.clear;
     this.runCode = obj.runCode;
+    this.setFontSize = obj.setFontSize;
 };
 
 
