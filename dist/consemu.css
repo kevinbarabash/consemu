@@ -1,0 +1,76 @@
+/* TODO: package CSS inside HTML */
+
+.consemu, .consemu textarea {
+    font-family: 'monaco', 'lucida console', monospace;
+    font-size: 1.0em;
+    line-height: 1.3em;
+    padding-left: 1.0em;
+    white-space: pre;
+}
+
+.consemu textarea {
+    border: none;
+    resize: none;
+    width: 775px;
+    height: 1.3em;
+    border-left: solid 3px orange;
+}
+
+.consemu textarea:focus {
+    outline: none;
+}
+
+.consemu .label {
+    color: rgb(200,0,200);
+}
+
+.consemu .read-only {
+    color: rgb(220,160,220);
+}
+
+.consemu .code {
+    color: rgb(64,160,255);
+}
+
+.consemu .number, .consemu .boolean {
+    color: rgb(0,0,224);
+}
+
+/* TODO: create two types of strings: one for output and one for results */
+.consemu .string {
+    color: rgb(0,0,0);
+}
+
+.consemu .error {
+    color: rgb(255,0,0);
+}
+
+.consemu .undefined {
+    color: #999;
+}
+
+.consemu .null {
+    color: #999;
+}
+
+.consemu .line {
+    border-bottom: solid 1px whitesmoke;
+    padding: 2px 0;
+}
+
+.consemu .triangle {
+    position:absolute;
+    width:1.5em;
+    left:-1.5em;
+    top:0.25em;
+    text-align:center;
+    font-size:0.75em;
+    color: #666;
+    cursor: pointer;
+}
+
+.consemu ul {
+    margin: 0;
+    list-style-type: none;
+    padding-left: 16px;
+}
