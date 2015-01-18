@@ -6,8 +6,8 @@ var source = require('vinyl-source-stream');
 var name = "consemu";
 
 gulp.task('compile', function () {
-    var to5_stream = to5({ format: { indent: {style: "    "} } }).on("error", function () {
-        console.log("error");
+    var to5_stream = to5({ format: { indent: {style: "    "} } }).on("error", function (e) {
+        console.log(e);
         to5_stream.end();
     });
     
@@ -17,7 +17,7 @@ gulp.task('compile', function () {
 });
 
 gulp.task('bundle', ['compile'], function () {
-    return browserify({ standalone: name })
+    return browserify({ standalone: "ConsoleEmulator" })
         .require("./lib/" + name + ".js", { entry: true })
         .bundle()
         .pipe(source(name + ".js"))
