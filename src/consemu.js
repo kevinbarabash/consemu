@@ -16,7 +16,8 @@ function createConsole(container) {
     var textarea;
     var lineCount;
     var console;
-
+    var context = {};
+    
     // initialization code
     textarea = document.createElement("div");
     textarea.style.width = "100%";
@@ -39,7 +40,8 @@ function createConsole(container) {
                 }
 
                 // TODO: parse each line so that we can extract variable declaration to an outer context
-                runCode(textarea.innerText, () => {
+                runCode(textarea.innerText, (result) => {
+                    console.log(result);
                     e.preventDefault();
                     resetInput();
                 });
@@ -69,7 +71,23 @@ function createConsole(container) {
 
     var addLine = function (value, cls) {
         var line = document.createElement("div");
-        line.innerText = value;
+        
+        if (value instanceof Array) {
+            line.appendChild(document.createTextNode("["));
+            value.forEach((item, index) => {
+                if (index > 0) {
+                    line.appendChild(document.createTextNode(", "));
+                }
+                var span = document.createElement("span");
+                span.setAttribute("class", ["line", typeof item].join(" "));
+                span.appendChild(document.createTextNode(item));
+                line.appendChild(span);
+            });
+            line.appendChild(document.createTextNode("]"));
+        } else {
+            line.appendChild(document.createTextNode(value));
+        }
+        
         line.setAttribute("class", ["line", cls].join(" "));
         container.insertBefore(line, textarea);
 
@@ -84,13 +102,15 @@ function createConsole(container) {
     };
     
     var runCode = function(code, callback) {
+        var result;
         try {
-            var result = eval(code);
-            console.log(result);
+            result = eval("with(context) { " + code + " }");
         } catch (e) {
             addLine(e.toString(), "error");
         } finally {
-            callback();
+            if (callback) {
+                callback(result);
+            }
         }
     };
 
@@ -107,11 +127,16 @@ function createConsole(container) {
         container.style.fontSize = fontSize + "px";  
     };
     
+    var setContext = function(ctx) {
+        context = ctx;
+    };
+    
     // public "interface"
     return {
         clear: clear,
         runCode: runCode,
-        setFontSize: setFontSize
+        setFontSize: setFontSize,
+        setContext: setContext
     };
 }
 
@@ -121,6 +146,7 @@ var ConsoleEmulator = function(container) {
     this.clear = obj.clear;
     this.runCode = obj.runCode;
     this.setFontSize = obj.setFontSize;
+    this.setContext = obj.setContext;
 };
 
 

@@ -2,6 +2,7 @@
 
 .consemu {
     padding: 0 5px;
+    overflow: scroll;
 }
 
 .consemu, .consemu textarea {

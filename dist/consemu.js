@@ -1,5 +1,4 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var o;"undefined"!=typeof window?o=window:"undefined"!=typeof global?o=global:"undefined"!=typeof self&&(o=self),o.ConsoleEmulator=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-"use strict";
 
 var _toArray = function (arr) {
     return Array.isArray(arr) ? arr : Array.from(arr);
@@ -23,6 +22,7 @@ function createConsole(container) {
     var textarea;
     var lineCount;
     var console;
+    var context = {};
 
     // initialization code
     textarea = document.createElement("div");
@@ -46,7 +46,8 @@ function createConsole(container) {
                 }
 
                 // TODO: parse each line so that we can extract variable declaration to an outer context
-                runCode(textarea.innerText, function () {
+                runCode(textarea.innerText, function (result) {
+                    console.log(result);
                     e.preventDefault();
                     resetInput();
                 });
@@ -84,7 +85,23 @@ function createConsole(container) {
 
     var addLine = function (value, cls) {
         var line = document.createElement("div");
-        line.innerText = value;
+
+        if (value instanceof Array) {
+            line.appendChild(document.createTextNode("["));
+            value.forEach(function (item, index) {
+                if (index > 0) {
+                    line.appendChild(document.createTextNode(", "));
+                }
+                var span = document.createElement("span");
+                span.setAttribute("class", ["line", typeof item].join(" "));
+                span.appendChild(document.createTextNode(item));
+                line.appendChild(span);
+            });
+            line.appendChild(document.createTextNode("]"));
+        } else {
+            line.appendChild(document.createTextNode(value));
+        }
+
         line.setAttribute("class", ["line", cls].join(" "));
         container.insertBefore(line, textarea);
 
@@ -99,13 +116,15 @@ function createConsole(container) {
     };
 
     var runCode = function (code, callback) {
+        var result;
         try {
-            var result = eval(code);
-            console.log(result);
+            result = eval("with(context) { " + code + " }");
         } catch (e) {
             addLine(e.toString(), "error");
         } finally {
-            callback();
+            if (callback) {
+                callback(result);
+            }
         }
     };
 
@@ -122,11 +141,16 @@ function createConsole(container) {
         container.style.fontSize = fontSize + "px";
     };
 
+    var setContext = function (ctx) {
+        context = ctx;
+    };
+
     // public "interface"
     return {
         clear: clear,
         runCode: runCode,
-        setFontSize: setFontSize
+        setFontSize: setFontSize,
+        setContext: setContext
     };
 }
 
@@ -136,6 +160,7 @@ var ConsoleEmulator = function (container) {
     this.clear = obj.clear;
     this.runCode = obj.runCode;
     this.setFontSize = obj.setFontSize;
+    this.setContext = obj.setContext;
 };
 
 
