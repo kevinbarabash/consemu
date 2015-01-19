@@ -14,40 +14,37 @@ var trueClick = require("./true_click");
 
 function createConsole(container) {
     var textarea;
-    var lineCount;
     var console;
-    var context = {};
     
     // initialization code
-    textarea = document.createElement("div");
-    textarea.style.width = "100%";
-    textarea.style.boxSizing = "border-box";
-    textarea.setAttribute("contenteditable", "true");
-    container.appendChild(textarea);
+    if (false) {
+        textarea = document.createElement("div");
+        textarea.style.width = "100%";
+        textarea.style.boxSizing = "border-box";
+        textarea.setAttribute("contenteditable", "true");
+        container.appendChild(textarea);
 
-    trueClick.addEventListener(container, function (e) {
-        textarea.focus();
-    });
+        trueClick.addEventListener(container, function (e) {
+            textarea.focus();
+        });
 
-    lineCount = 1;
-    textarea.addEventListener("keydown", function (e) {
-        if (e.keyCode === 13) {
-            if (e.shiftKey) {
-                lineCount++;
-            } else {
-                if (textarea.innerText.trim() !== "") {
-                    addLine(textarea.innerText, "code");
+        textarea.addEventListener("keydown", function (e) {
+            if (e.keyCode === 13) {
+                if (!e.shiftKey) {
+                    if (textarea.innerText.trim() !== "") {
+                        addLine(textarea.innerText, "code");
+                    }
+
+                    // TODO: parse each line so that we can extract variable declaration to an outer context
+                    runCode(textarea.innerText, (result) => {
+                        console.log(result);
+                        e.preventDefault();
+                        resetInput();
+                    });
                 }
-
-                // TODO: parse each line so that we can extract variable declaration to an outer context
-                runCode(textarea.innerText, (result) => {
-                    console.log(result);
-                    e.preventDefault();
-                    resetInput();
-                });
             }
-        }
-    });
+        });
+    }
 
     // hide the global definition
     // this allows multiple console emulators to run on the same page without
@@ -95,8 +92,9 @@ function createConsole(container) {
     };
 
     var resetInput = function () {
-        textarea.innerText = "";
-        lineCount = 1;
+        if (textarea) {
+            textarea.innerText = "";
+        }
 
         updateScroll();
     };
@@ -104,8 +102,8 @@ function createConsole(container) {
     var runCode = function(code, callback) {
         var result;
         try {
-            var ctx = context.ctx;
-            result = eval("with(context) { " + code + " }");
+            // TODO: only use eval for commands typed into the console... everything else should use a new Function() { ...
+            result = eval(code);
         } catch (e) {
             addLine(e.toString(), "error");
         } finally {
@@ -128,16 +126,11 @@ function createConsole(container) {
         container.style.fontSize = fontSize + "px";  
     };
     
-    var setContext = function(ctx) {
-        context = ctx;
-    };
-    
     // public "interface"
     return {
         clear: clear,
         runCode: runCode,
-        setFontSize: setFontSize,
-        setContext: setContext
+        setFontSize: setFontSize
     };
 }
 
