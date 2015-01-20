@@ -141,11 +141,16 @@ function createConsole(container) {
         container.style.fontSize = fontSize + "px";
     };
 
+    var printError = function (errorText) {
+        addLine(errorText, "error");
+    };
+
     // public "interface"
     return {
         clear: clear,
         runCode: runCode,
-        setFontSize: setFontSize
+        setFontSize: setFontSize,
+        printError: printError
     };
 }
 
@@ -155,7 +160,7 @@ var ConsoleEmulator = function (container) {
     this.clear = obj.clear;
     this.runCode = obj.runCode;
     this.setFontSize = obj.setFontSize;
-    this.setContext = obj.setContext;
+    this.printError = obj.printError;
 };
 
 
